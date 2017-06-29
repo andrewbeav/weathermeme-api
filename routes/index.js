@@ -1,22 +1,56 @@
 var express = require('express');
 var router = express.Router();
 
-var exec = require('child_process').exec;
+var PythonShell = require('python-shell');
+var fs = require('fs');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  console.log('Got a get request');
-  var apiKey = req.query.owm_appid;
-  var lat = req.query.lat;
-  var lon = req.query.lon;
+  var apiKey, lat, lon;
+  if (req.query.owm_appid) {
+    apiKey = req.query.owm_appid;
+  } else {
+    res.send("Need Api Key");
+  }
+  if (req.query.lat && req.query.lon) {
+    lat = req.query.lat;
+    lon = req.query.lon;
+  } else {
+    res.send("Need location");
+  }
 
-  var cmd = 'python2 weathermeme_engine/weathermeme.py ' + apiKey + " " + lat + " " + lon;
-  console.log(cmd);
-  exec(cmd);
-  console.log('executing...')
-  var weathermemeJson = require('../weathermeme_engine/weathermeme_result.json');
-  console.log(weathermemeJson);
-  res.send(weathermemeJson);
+  var pythonShellOptions = {
+    mode: 'text',
+    pythonPath: '/usr/bin/python2',
+    scriptPath: '/home/andrewbeav/Documents/code/projects/weathermeme-api/weathermeme_engine',
+    args: [apiKey, lat, lon]
+  }
+
+  var pyshell = new PythonShell('weathermeme.py', pythonShellOptions);
+
+  let weathermemeJsonString;
+
+  pyshell.on('message', function(message) {
+    console.log(message);
+    weathermemeJsonString = message;
+  });
+
+  pyshell.end(function(err) {
+    if (err) throw err;
+    fs.writeFile('weathermeme_result.json', weathermemeJsonString, function(err) {
+      if (err) return console.log(err);
+
+      res.send(require('../weathermeme_result.json'));
+    });
+  });
+
+  /*
+  PythonShell.run('weathermeme.py', pythonShellOptions, function(err, results) {
+    if (err) throw err;
+
+    res.send(results);
+  })
+  */
 });
 
 module.exports = router;
