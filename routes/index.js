@@ -36,12 +36,14 @@ router.get('/', function(req, res, next) {
   });
 
   pyshell.end(function(err) {
-    if (err) throw err;
-    fs.writeFile('weathermeme_result.json', weathermemeJsonString, function(err) {
+    if (err) res.send('Something went wrong. Check the paramaters'); // TODO more specific error checking
+    else {
+      fs.writeFile('weathermeme_result.json', weathermemeJsonString, function(err) {
       if (err) return console.log(err);
 
       res.send(require('../weathermeme_result.json'));
-    });
+      });
+    }
   });
 
   /*
