@@ -22,7 +22,7 @@ router.get('/', function(req, res, next) {
   var pythonShellOptions = {
     mode: 'text',
     pythonPath: '/usr/bin/python2',
-    scriptPath: '/home/andrewbeav/Documents/code/projects/weathermeme-api/weathermeme_engine',
+    scriptPath: './weathermeme_engine',
     args: [apiKey, lat, lon]
   }
 
@@ -45,14 +45,6 @@ router.get('/', function(req, res, next) {
       });
     }
   });
-
-  /*
-  PythonShell.run('weathermeme.py', pythonShellOptions, function(err, results) {
-    if (err) throw err;
-
-    res.send(results);
-  })
-  */
 });
 
 module.exports = router;
