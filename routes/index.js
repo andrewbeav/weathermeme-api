@@ -43,12 +43,6 @@ router.get('/', function(req, res, next) {
   pyshell.end(function(err) {
     if (err) res.send('Something went wrong. Check the paramaters'); // TODO more specific error checking
   });
-
-  PythonShell.run('weathermeme.py', pythonShellOptions, function(err, results) {
-    if (err) throw err;
-
-    res.send(results);
-  })
 });
 
 module.exports = router;
