@@ -42,7 +42,6 @@ router.get('/', function(req, res, next) {
       if (err) return console.log(err);
 
       res.send(require('../weathermeme_result.json'));
-      });
     }
   });
 });
