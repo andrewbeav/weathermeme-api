@@ -28,7 +28,7 @@ router.get('/', function(req, res, next) {
 
   var pyshell = new PythonShell('weathermeme.py', pythonShellOptions);
 
-  let weathermemeJsonString;
+  var weathermemeJsonString;
 
   pyshell.on('message', function(message) {
     console.log(message);
