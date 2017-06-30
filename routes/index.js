@@ -43,7 +43,6 @@ router.get('/', function(req, res, next) {
 
       res.send(require('../weathermeme_result.json'));
     }
-  });
 });
 
 module.exports = router;
