@@ -28,21 +28,27 @@ router.get('/', function(req, res, next) {
 
   var pyshell = new PythonShell('weathermeme.py', pythonShellOptions);
 
-  var weathermemeJsonString;
+  let weathermemeJsonString;
 
   pyshell.on('message', function(message) {
     console.log(message);
     weathermemeJsonString = message;
     fs.writeFile('weathermeme_result.json', weathermemeJsonString, function(err) {
+      if (err) return console.log(err);
+
+      res.send(require('../weathermeme_result.json'));
+    });
   });
 
   pyshell.end(function(err) {
     if (err) res.send('Something went wrong. Check the paramaters'); // TODO more specific error checking
-    else {
-      if (err) return console.log(err);
+  });
 
-      res.send(require('../weathermeme_result.json'));
-    }
+  PythonShell.run('weathermeme.py', pythonShellOptions, function(err, results) {
+    if (err) throw err;
+
+    res.send(results);
+  })
 });
 
 module.exports = router;
