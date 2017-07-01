@@ -54,7 +54,7 @@ def get_response(api_key, lat, lon):
 # to actually become worthwhile. I'm open to pull
 # requests if you are reading this and have ideas
 def get_meme_code(weather_info):
-        rand = random.randint(0, 5)
+        rand = random.randint(1, 6)
 
         main = weather_info['main']
         wind = weather_info['wind']
