@@ -43,6 +43,7 @@ def get_response(api_key, lat, lon):
     response = {}
     weather_info = get_weather_info(api_key, lat, lon)
     response['meme_code'] = get_meme_code(weather_info)
+    response['meme_location'] = 'http://andrewbevelhymer.com/weathermeme/meme/' + response['meme_code'] + '.png'
     response['weather_info'] = weather_info
 
     return json.dumps(response)

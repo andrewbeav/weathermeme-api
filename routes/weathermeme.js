@@ -43,7 +43,7 @@ router.get('/api', function(req, res, next) {
   });
 
   pyshell.end(function(err) {
-    if (err) res.send('Something went wrong. Check the paramaters'); // TODO more specific error checking
+    if (err) res.send(err); // TODO more specific error checking
     else {
       var weathermemeJson = JSON.parse(weathermemeJsonString);
       res.send(weathermemeJson);
