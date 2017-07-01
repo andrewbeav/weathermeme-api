@@ -1,8 +1,16 @@
 var express = require('express');
 var router = express.Router();
 
+var path = require('path');
+
 var PythonShell = require('python-shell');
 var fs = require('fs');
+
+router.get('/meme/:image', function(req, res, next) {
+  let imageName = req.params.image;
+
+  res.sendFile(path.join(__dirname, '../res/weathermeme/memes/' + imageName));
+});
 
 router.get('/api', function(req, res, next) {
   var apiKey, lat, lon;
