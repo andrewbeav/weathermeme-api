@@ -28,25 +28,23 @@ router.get('/api', function(req, res, next) {
 
   var pythonShellOptions = {
     mode: 'text',
-    pythonPath: '/usr/bin/python2',
+    pythonPath: '/usr/bin/python',
     scriptPath: './weathermeme_engine',
     args: [apiKey, lat, lon]
   }
 
   var pyshell = new PythonShell('weathermeme.py', pythonShellOptions);
 
-  var weathermemeJsonString;
+  var weathermemeString;
 
   pyshell.on('message', function(message) {
-    console.log(message);
-    weathermemeJsonString = message;
+    weathermemeString = message;
   });
 
   pyshell.end(function(err) {
     if (err) res.send(err); // TODO more specific error checking
     else {
-      var weathermemeJson = JSON.parse(weathermemeJsonString);
-      res.send(weathermemeJson);
+      res.send(weathermemeString);
     }
   });
 });

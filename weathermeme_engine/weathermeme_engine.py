@@ -1,6 +1,7 @@
 import socket
 import sys
 import json
+import sqlite3
 import random
 
 HOT_TRESHOLD = 80
@@ -28,47 +29,66 @@ def get_weather_info(api_key, lat, lon):
 
     message = "GET /data/2.5/weather?lat=" + str(lat) + "&lon=" + str(lon) + "&appid=" + api_key + "&units=imperial HTTP/1.1\r\nhost: api.openweathermap.org\r\n\r\n"
     try:
-        s.sendall(message)
+        b = message.encode('utf-8')
+        s.sendall(b)
     except socket.error:
         print('Failed to send request, exiting')
         sys.exit()
 
     reply = s.recv(4096)
 
+    reply = reply.decode('utf-8')
+
     jsonString = reply[reply.index('{') : len(reply)]
 
     return json.loads(jsonString)
 
-def get_response(api_key, lat, lon):
-    response = {}
+def get_owm_weather_id(weather_info):
+    weather_list = weather_info['weather']
+    id_list = []
+    for info in weather_list:
+        id_list.append(info['id'])
+
+    return id_list
+
+def get_temp(weather_info):
+    return weather_info['main']['temp']
+
+def get_wind_speed(weather_info):
+    return weather_info['wind']['speed']
+
+def get_meme_name(api_key, lat, lon):
+    condition = get_condition(api_key, lat, lon)
+    conn = sqlite3.connect('../weathermeme_engine/db/memes.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM ' + condition)
+    condition += str(random.randrange(1, len(c.fetchall())+1))
+    c.close()
+    conn.close()
+    return condition
+
+def get_condition(api_key, lat, lon):
     weather_info = get_weather_info(api_key, lat, lon)
-    response['meme_code'] = get_meme_code(weather_info)
-    response['meme_location'] = 'http://andrewbevelhymer.com/weathermeme/meme/' + response['meme_code'] + '.png'
-    response['weather_info'] = weather_info
+    owm_weather_id_list = get_owm_weather_id(weather_info)
 
-    return json.dumps(response)
+    temp = get_temp(weather_info)
+    wind_speed = get_wind_speed(weather_info)
 
-# Method that returns the 'meme_code' (filename)
-# of the meme. This is the main algorithm that
-# is pretty crappy right now. This is the part that
-# needs to be improved the most in order for the api
-# to actually become worthwhile. I'm open to pull
-# requests if you are reading this and have ideas
-def get_meme_code(weather_info):
-        rand = random.randint(1, 6)
+    for weather_id in owm_weather_id_list:
+        if weather_id > 600 and weather_id < 700:
+            return 'snow'
+        elif weather_id > 500 and weather_id < 600 or weather_id > 200 and weather_id < 300:
+            return 'rain'
 
-        main = weather_info['main']
-        wind = weather_info['wind']
+    if wind_speed > WIND_TRESHOLD:
+        return 'windy'
+    elif temp < COLD_TRESHOLD:
+        return 'cold'
+    elif temp < CHILLY_TRESHOLD:
+        return 'chilly'
+    elif temp < HOT_TRESHOLD:
+        return 'neutral'
+    elif temp >= HOT_TRESHOLD:
+        return 'hot'
 
-        if wind['speed'] > WIND_TRESHOLD:
-                result = "wind" + str(rand)
-        elif main['temp'] > HOT_TRESHOLD:
-            result = "hot_weather" + str(rand)
-        elif main['temp'] < COLD_TRESHOLD:
-            result = "cold_weather" + str(rand)
-        elif main['temp'] < CHILLY_TRESHOLD:
-            result = "chilly" + str(rand)
-        else:
-            result = "neutral" + str(rand)
-
-        return result
+    return 'err'
