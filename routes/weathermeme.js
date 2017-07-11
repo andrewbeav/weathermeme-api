@@ -4,7 +4,6 @@ var router = express.Router();
 var path = require('path');
 
 var PythonShell = require('python-shell');
-var fs = require('fs');
 
 router.get('/meme/:image', function(req, res, next) {
   let imageName = req.params.image;
@@ -38,6 +37,7 @@ router.get('/api', function(req, res, next) {
   var weathermemeString;
 
   pyshell.on('message', function(message) {
+	  console.log(message);
     weathermemeString = message;
   });
 

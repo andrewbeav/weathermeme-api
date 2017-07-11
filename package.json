@@ -1,24 +1,15 @@
 {
-  "name": "weather-meme",
-  "version": "0.0.0",
-  "private": true,
+  "name": "weathermeme_api",
+  "version": "1.0.0",
+  "description": "API that serves images based on the weather at a particular latitude and longitude",
+  "main": "server.js",
   "scripts": {
-    "start": "node ./bin/www"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "author": "Andrew Bevelhymer",
+  "license": "ISC",
   "dependencies": {
-    "body-parser": "~1.17.1",
-    "cookie-parser": "~1.4.3",
-    "cors": "^2.8.3",
-    "debug": "~2.6.3",
-    "express": "~4.15.2",
-    "hjs": "~0.0.6",
-    "less-middleware": "~2.2.0",
-    "morgan": "~1.8.1",
-    "python-shell": "^0.4.0",
-    "serve-favicon": "~2.4.2"
-  },
-  "devDependencies": {
-    "flightplan": "^0.6.17",
-    "fly": "^2.0.6"
+    "express": "^4.15.3",
+    "python-shell": "^0.4.0"
   }
 }
