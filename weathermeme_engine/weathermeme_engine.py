@@ -77,7 +77,7 @@ def get_condition(api_key, lat, lon):
     for weather_id in owm_weather_id_list:
         if weather_id > 600 and weather_id < 700:
             return 'snow'
-        elif weather_id > 500 and weather_id < 600 or weather_id > 200 and weather_id < 300:
+        elif weather_id > 500 and weather_id < 600 or weather_id > 200 and weather_id < 400:
             return 'rain'
 
     if wind_speed > WIND_TRESHOLD:

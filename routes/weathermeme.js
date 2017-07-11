@@ -44,7 +44,7 @@ router.get('/api', function(req, res, next) {
   pyshell.end(function(err) {
     if (err) res.send(err); // TODO more specific error checking
     else {
-      res.send(weathermemeString);
+      res.sendFile(path.join(__dirname, '../res/weathermeme/memes/' + weathermemeString + '.png'));
     }
   });
 });
