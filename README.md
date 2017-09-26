@@ -11,7 +11,7 @@ To start the server:
   node server.js
 </code>
 
-To access the server go to localhost:3000 on your browser
+To access the server go to localhost:3000 on your browser. The api is accessed at /weathermeme/api/
 
 ## The code
 The interesting bits of code are in weathermeme_engine, that's where it determines what meme to use
