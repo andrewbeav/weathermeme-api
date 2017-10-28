@@ -1,4 +1,4 @@
-import socket
+import requests
 import sys
 import json
 import sqlite3
@@ -13,33 +13,7 @@ SNOW_CODE = 600
 THUNDERSTORM_CODE = 200
 
 def get_weather_info(api_key, lat, lon):
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    except (socket.err, msg):
-        print("Failed to create socket. Error code: " + str(msg[0]) + ", Error message " + str(msg[1]))
-        sys.exit()
-
-    try:
-        remote_ip = socket.gethostbyname('api.openweathermap.org')
-    except socket.gaierror:
-        print('Could not resolve hostname. Exiting')
-        sys.exit()
-
-    s.connect((remote_ip, 80))
-
-    message = "GET /data/2.5/weather?lat=" + str(lat) + "&lon=" + str(lon) + "&appid=" + api_key + "&units=imperial HTTP/1.1\r\nhost: api.openweathermap.org\r\n\r\n"
-    try:
-        b = message.encode('utf-8')
-        s.sendall(b)
-    except socket.error:
-        print('Failed to send request, exiting')
-        sys.exit()
-
-    reply = s.recv(4096)
-
-    reply = reply.decode('utf-8')
-
-    jsonString = reply[reply.index('{') : len(reply)]
+    jsonString = requests.get('https://api.openweathermap.org/data/2.5/weather?lat=' + str(lat) + '&lon=' + str(lon) + '&appid=' + api_key + '&units=imperial').text
 
     return json.loads(jsonString)
 
@@ -57,8 +31,19 @@ def get_temp(weather_info):
 def get_wind_speed(weather_info):
     return weather_info['wind']['speed']
 
-def get_meme_name(api_key, lat, lon):
-    condition = get_condition(api_key, lat, lon)
+# This should be the entry point,
+# returns json of all the data, including
+# the location of the meme
+def get_data(api_key, lat, lon):
+    data = {}
+    weather_info = get_weather_info(api_key, lat, lon)
+    data['meme_name'] = get_meme_name(weather_info)
+    data['meme_location'] = 'http://andrewbevelhymer.com/weathermeme/memes/' + data['meme_name'] + '.png'
+    data['weather_info'] = weather_info
+    return json.dumps(data)
+
+def get_meme_name(weather_info):
+    condition = get_condition(weather_info)
     conn = sqlite3.connect('../weathermeme_engine/db/memes.db')
     c = conn.cursor()
     c.execute('SELECT * FROM ' + condition)
@@ -67,8 +52,8 @@ def get_meme_name(api_key, lat, lon):
     conn.close()
     return condition
 
-def get_condition(api_key, lat, lon):
-    weather_info = get_weather_info(api_key, lat, lon)
+# This is the algorithm for generating the condition
+def get_condition(weather_info):
     owm_weather_id_list = get_owm_weather_id(weather_info)
 
     temp = get_temp(weather_info)

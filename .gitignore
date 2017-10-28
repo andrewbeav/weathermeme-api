@@ -4,3 +4,5 @@ weathermeme_result.json
 
 # node modules
 node_modules/
+
+.idea
