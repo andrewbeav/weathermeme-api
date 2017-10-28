@@ -1,8 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
 var path = require('path');
-
 var PythonShell = require('python-shell');
 
 router.get('/meme/:image', function(req, res, next) {
@@ -34,17 +32,18 @@ router.get('/api', function(req, res, next) {
 
   var pyshell = new PythonShell('weathermeme.py', pythonShellOptions);
 
-  var weathermemeString;
+  var weathermemeJsonString;
 
   pyshell.on('message', function(message) {
-	  console.log(message);
-    weathermemeString = message;
+      console.log(message);
+      weathermemeJsonString = message;
   });
 
   pyshell.end(function(err) {
     if (err) res.send(err); // TODO more specific error checking
     else {
-      res.sendFile(path.join(__dirname, '../res/weathermeme/memes/' + weathermemeString + '.png'));
+      let weathermemeJson = JSON.parse(weathermemeJsonString);
+      res.send(weathermemeJson)
     }
   });
 });
